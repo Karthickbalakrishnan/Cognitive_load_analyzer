@@ -1,362 +1,335 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { 
   UploadCloud, Sliders, ChevronDown, X, HelpCircle, AlertTriangle, 
   CheckCircle2, Info, FileText, Search, RefreshCw, ArrowRight, Eye, 
-  Layout, Download, FileSpreadsheet, Layers, ShieldAlert, Cpu, Copy, 
-  Check, Sparkles
+  Layout, Download, FileSpreadsheet, Layers, ShieldAlert, History
 } from 'lucide-react';
-import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
-
-// --- PURPOSE-BUILT ATLASSIAN DESIGN SYSTEM PRIMITIVES ---
-const Button = ({ children, appearance = 'default', onClick, disabled, icon: Icon }) => {
-  const base = "inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded transition-all cursor-pointer select-none focus:ring-2 focus:ring-[#4C9AFF] focus:outline-none";
-  const styles = {
-    default: "bg-[#F4F5F7] text-[#172B4D] hover:bg-[#EBECF0] border border-[#DFE1E6]",
-    primary: "bg-[#0052CC] text-white hover:bg-[#0747A6] shadow-xs",
-    subtle: "text-[#5E6C84] hover:bg-[#EBECF0] hover:text-[#172B4D]",
-    danger: "bg-[#FF5630] text-white hover:bg-[#DE350B]"
-  };
-  return (
-    <button onClick={onClick} disabled={disabled} className={`${base} ${styles[appearance]} disabled:opacity-50 disabled:cursor-not-allowed`}>
-      {Icon && <Icon size={14} />}
-      {children}
-    </button>
-  );
-};
-
-const Lozenge = ({ children, appearance = 'default' }) => {
-  const styles = {
-    default: "bg-[#EBECF0] text-[#42526E]",
-    success: "bg-[#E3FCEF] text-[#006644]",
-    removed: "bg-[#FFEBE6] text-[#BF2600]",
-    moved: "bg-[#FFF0B3] text-[#7A869A]"
-  };
-  return <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${styles[appearance]}`}>{children}</span>;
-};
-
-const SeverityBadge = ({ severity }) => {
-  const styles = {
-    Critical: "bg-[#FFEBE6] text-[#BF2600] border-l-2 border-[#FF5630]",
-    High: "bg-[#FFF0B3] text-[#7A869A] border-l-2 border-[#FFAB00]",
-    Medium: "bg-[#DEEBFF] text-[#0747A6] border-l-2 border-[#0052CC]",
-    Low: "bg-[#E3FCEF] text-[#006644] border-l-2 border-[#36B37E]"
-  };
-  return <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${styles[severity]}`}>{severity}</span>;
-};
 
 export default function App() {
-  // --- CORE SYSTEM ROUTERS ---
-  const [activeApplication, setActiveApplication] = useState('cogniscan'); 
-  const [activeModule, setActiveModule] = useState('cognitive'); 
-  
-  // --- TELEMETRY EXPERT PARAMETERS ---
-  const [fittsTargetDiameter, setFittsTargetDiameter] = useState(32); 
-  const [gestaltProximityGap, setGestaltProximityGap] = useState(24);   
-  const [simulatedStressLevel, setSimulatedStressLevel] = useState('High Pressure');
+  // Left Sidebar State Config
+  const [context, setContext] = useState('Analytics Dashboard');
+  const [audience, setAudience] = useState('Expert Users');
+  const [goal, setGoal] = useState('Revenue Filter');
+  const [frameworks, setFrameworks] = useState(["Miller's", "WCAG", "Cognitive Load"]);
 
-  // --- DYNAMIC DATA MANAGEMENT STORES ---
+  // Application engine status
   const [imageSrc, setImageSrc] = useState(null);
-  const [isScanning, setIsScanning] = useState(false);
-  const [scanComplete, setScanComplete] = useState(false);
-  const [scanPipelineStage, setScanPipelineStage] = useState('');
-  const [activeFrictionRow, setActiveFrictionRow] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisComplete, setAnalysisComplete] = useState(false);
+  const [activeTab, setActiveTab] = useState('upload');
 
-  // --- GENERATE TELEMETRY SCORE DIALS MATRIX ACCORDING TO USER VALUES ---
-  const calcMillerScore = Math.max(30, 100 - (gestaltProximityGap * 1.3)).toFixed(0);
-  const calcHickScore = (simulatedStressLevel === 'High Pressure' ? 58 : 84);
-  const calcFittsScore = Math.min(100, fittsTargetDiameter * 2.0).toFixed(0);
-
-  const dynamicRadarChartData = [
-    { subject: "Miller's Law", A: Number(calcMillerScore), fullMark: 100 },
-    { subject: "Visual Hierarchy", A: Math.min(95, 55 + (gestaltProximityGap * 0.8)), fullMark: 100 },
-    { subject: "Accessibility", A: Math.min(100, fittsTargetDiameter * 1.8), fullMark: 100 },
-    { subject: "Color Contrast", A: 88, fullMark: 100 },
-    { subject: "Fitts's Law", A: Number(calcFittsScore), fullMark: 100 },
-    { subject: "Hick's Law", A: calcHickScore, fullMark: 100 }
-  ];
-
-  const executeImageScan = () => {
-    setIsScanning(true);
-    setScanComplete(false);
-    const stages = [
-      "AI-AVS Ingestion Lock...", 
-      "Parsing Spatial Layout Coordinate Matrices...", 
-      "Computing Bounding Dial Targets...",
-      "Structuring Audit Metrics JSON Report..."
-    ];
-    
-    stages.forEach((stage, index) => {
-      setTimeout(() => {
-        setScanPipelineStage(stage);
-        if (index === stages.length - 1) {
-          setIsScanning(false);
-          setScanComplete(true);
-        }
-      }, (index + 1) * 400);
-    });
+  const removeFramework = (fw) => {
+    setFrameworks(frameworks.filter(f => f !== fw));
   };
 
-  const loadDemoMode = () => {
-    setImageSrc("https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80");
-    executeImageScan();
+  const simulateAiAudit = () => {
+    setIsAnalyzing(true);
+    setAnalysisComplete(false);
+    setTimeout(() => {
+      setIsAnalyzing(false);
+      setAnalysisComplete(true);
+    }, 1500);
+  };
+
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setImageSrc(event.target.result);
+        simulateAiAudit();
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F5F7] text-[#172B4D] font-sans antialiased flex flex-col">
+    <div className="min-h-screen bg-[#0F172A] text-[#F8FAFC] font-sans antialiased flex flex-col md:flex-row select-none">
       
-      {/* ATLASSIAN CONFLUENCE STYLED APPLICATION BAR */}
-      <header className="h-12 bg-[#0747A6] text-white px-4 flex items-center justify-between z-20 shrink-0 select-none">
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2 font-black tracking-tight text-sm">
-            <Layers className="text-[#4C9AFF]" size={18} />
-            <span>CogniScan Suite Pro</span>
-          </div>
-          <nav className="hidden md:flex items-center gap-1 text-xs font-semibold">
-            <button onClick={() => { setActiveApplication('cogniscan'); setScanComplete(false); setImageSrc(null); }} className={`px-3 py-1.5 rounded transition-colors ${activeApplication === 'cogniscan' ? 'bg-[#0C1E3C] text-white font-bold' : 'text-[#DEEBFF] hover:bg-[#0052CC]'}`}>
-              CogniScan Vision Analyser
-            </button>
-            <button onClick={() => { setActiveApplication('audit_tool'); }} className={`px-3 py-1.5 rounded transition-colors ${activeApplication === 'audit_tool' ? 'bg-[#0C1E3C] text-white font-bold' : 'text-[#DEEBFF] hover:bg-[#0052CC]'}`}>
-              UX Cognitive Audit Engine
-            </button>
-          </nav>
-        </div>
-
-        <div className="flex items-center gap-2 text-xs">
-          <span className="text-[10px] uppercase font-mono tracking-wider text-[#DEEBFF]">Stress Profile:</span>
-          <select 
-            value={simulatedStressLevel} 
-            onChange={(e) => setSimulatedStressLevel(e.target.value)}
-            className="bg-[#0C1E3C] text-white text-xs border border-[#172B4D] rounded px-2 py-0.5"
-          >
-            <option>High Pressure</option>
-            <option>Ambient Environment</option>
-          </select>
-        </div>
-      </header>
-
-      {/* CORE FRAME LAYOUT */}
-      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+      {/* ================= LEFT SIDEBAR: AUDITOR SETUP ================= */}
+      <aside className="w-full md:w-80 bg-[#1E293B] border-r border-[#334155] flex flex-col shrink-0">
         
-        {/* PARAMENTRIC TELEMETRY PARAMETERS CONTROLS SIDEBAR */}
-        <aside className="w-full md:w-64 bg-[#0C1E3C] text-[#DEEBFF] flex flex-col shrink-0 border-r border-[#172B4D] select-none">
-          <div className="p-4 bg-[#0747A6]/30 border-b border-[#172B4D]">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#7A869A] block">Architect Telemetry Controls</span>
-            <span className="text-xs font-bold text-white mt-0.5 block">Live Parametric Overrides</span>
+        {/* Sidebar Header Brand */}
+        <div className="p-4 border-b border-[#334155] flex items-center gap-3">
+          <div className="w-8 h-8 bg-[#2563EB] rounded flex items-center justify-center text-white font-bold text-lg shadow-sm">
+            ▲
+          </div>
+          <span className="text-lg font-bold tracking-tight text-white">Auditor Setup</span>
+        </div>
+
+        {/* Tab Toggle Strip */}
+        <div className="flex border-b border-[#334155] px-2 text-xs">
+          <button 
+            onClick={() => setActiveTab('upload')}
+            className={`py-3 px-3 font-semibold border-b-2 transition-colors ${activeTab === 'upload' ? 'text-[#38BDF8] border-[#38BDF8]' : 'text-[#94A3B8] border-transparent hover:text-white'}`}
+          >
+            Upload New Screenshot
+          </button>
+          <button 
+            onClick={() => setActiveTab('history')}
+            className={`py-3 px-3 font-semibold border-b-2 transition-colors ${activeTab === 'history' ? 'text-[#38BDF8] border-[#38BDF8]' : 'text-[#94A3B8] border-transparent hover:text-white'}`}
+          >
+            Evaluation History
+          </button>
+        </div>
+
+        <div className="p-4 flex-1 overflow-y-auto space-y-6 text-xs">
+          
+          {/* Analysis & Controls Dropzone Container */}
+          <div className="space-y-2">
+            <h3 className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider">Analysis & Controls</h3>
+            <label className="border-2 border-dashed border-[#38BDF8] bg-[#0284C7]/10 rounded-lg p-6 block text-center cursor-pointer hover:bg-[#0284C7]/20 transition relative">
+              <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+              <UploadCloud size={32} className="mx-auto text-[#38BDF8] mb-2" />
+              <p className="font-bold text-[#38BDF8]">Drop screenshot for HCI Audit</p>
+              <p className="text-[#64748B] mt-0.5">Or click to parse spatial directory</p>
+
+              {isAnalyzing && (
+                <div className="absolute inset-0 bg-[#1E293B]/95 flex flex-col items-center justify-center p-2 rounded-lg">
+                  <RefreshCw className="animate-spin text-[#38BDF8] mb-2" size={20} />
+                  <span className="font-bold text-white">Parsing Vision Matrix...</span>
+                </div>
+              )}
+            </label>
+            <button onClick={simulateAiAudit} className="w-full py-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold rounded transition shadow-sm">
+              Start AI Audit
+            </button>
           </div>
 
-          <div className="p-4 flex-1 space-y-5 text-xs">
-            <div className="space-y-1.5">
-              <div className="flex justify-between items-center text-[11px]">
-                <span className="text-[#A5B2C6] font-semibold">Fitts's Target Box Diameter</span>
-                <span className="font-mono text-white font-bold">{fittsTargetDiameter}px</span>
+          {/* Configuration Forms Parameter Mapping */}
+          <div className="space-y-4 pt-4 border-t border-[#334155]">
+            <h3 className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider">Audit Parameters</h3>
+            
+            <div>
+              <label className="block font-semibold text-[#94A3B8] mb-1">Context</label>
+              <div className="relative">
+                <select value={context} onChange={(e) => setContext(e.target.value)} className="w-full bg-[#0F172A] border border-[#334155] text-white rounded p-2 pr-8 appearance-none focus:outline-none focus:ring-1 focus:ring-[#38BDF8]">
+                  <option>Analytics Dashboard</option>
+                  <option>Transaction Portal</option>
+                </select>
+                <ChevronDown size={14} className="absolute right-2.5 top-3 text-[#64748B] pointer-events-none" />
               </div>
-              <input type="range" min="16" max="64" value={fittsTargetDiameter} onChange={(e) => setFittsTargetDiameter(Number(e.target.value))} className="w-full accent-[#0052CC]" />
             </div>
 
-            <div className="space-y-1.5 pt-3 border-t border-[#172B4D]">
-              <div className="flex justify-between items-center text-[11px]">
-                <span className="text-[#A5B2C6] font-semibold">Gestalt Proximity Grid Spacing</span>
-                <span className="font-mono text-white font-bold">{gestaltProximityGap}px</span>
+            <div>
+              <label className="block font-semibold text-[#94A3B8] mb-1">Audience</label>
+              <div className="relative">
+                <select value={audience} onChange={(e) => setAudience(e.target.value)} className="w-full bg-[#0F172A] border border-[#334155] text-white rounded p-2 pr-8 appearance-none focus:outline-none focus:ring-1 focus:ring-[#38BDF8]">
+                  <option>Expert Users</option>
+                  <option>General Audience</option>
+                </select>
+                <ChevronDown size={14} className="absolute right-2.5 top-3 text-[#64748B] pointer-events-none" />
               </div>
-              <input type="range" min="8" max="48" value={gestaltProximityGap} onChange={(e) => setGestaltProximityGap(Number(e.target.value))} className="w-full accent-[#36B37E]" />
             </div>
 
-            {activeApplication === 'audit_tool' && (
-              <div className="pt-4 border-t border-[#172B4D] space-y-1.5">
-                <span className="block text-[9px] font-bold text-[#7A869A] uppercase tracking-wider">Audit Submodules</span>
-                {['cognitive', 'friction', 'recommendations', 'business', 'executive'].map(m => (
-                  <button key={m} onClick={() => setActiveModule(m)} className={`w-full text-left px-2 py-1.5 rounded text-[11px] font-semibold capitalize ${activeModule === m ? 'bg-[#0052CC] text-white' : 'text-[#DEEBFF] hover:bg-[#0747A6]/30'}`}>{m.replace('_', ' ')}</button>
+            <div>
+              <label className="block font-semibold text-[#94A3B8] mb-1">Goal</label>
+              <div className="relative">
+                <select value={goal} onChange={(e) => setGoal(e.target.value)} className="w-full bg-[#0F172A] border border-[#334155] text-white rounded p-2 pr-8 appearance-none focus:outline-none focus:ring-1 focus:ring-[#38BDF8]">
+                  <option>Revenue Filter</option>
+                  <option>Friction Minimization</option>
+                </select>
+                <ChevronDown size={14} className="absolute right-2.5 top-3 text-[#64748B] pointer-events-none" />
+              </div>
+            </div>
+
+            {/* Framework Pills Section */}
+            <div>
+              <label className="block font-semibold text-[#94A3B8] mb-1">Frameworks (active)</label>
+              <div className="flex flex-wrap gap-1.5 p-2 bg-[#0F172A] border border-[#334155] rounded min-h-[42px]">
+                {frameworks.map(fw => (
+                  <span key={fw} className="inline-flex items-center gap-1 bg-[#334155] text-white px-2 py-0.5 rounded text-[11px] font-medium">
+                    {fw}
+                    <button onClick={() => removeFramework(fw)} className="hover:bg-[#475569] rounded-full p-0.5">
+                      <X size={10} />
+                    </button>
+                  </span>
                 ))}
               </div>
-            )}
+            </div>
           </div>
-        </aside>
+        </div>
+      </aside>
 
-        {/* WORKSPACE CONTENT LAYOUT MAIN BOARD AREA */}
-        <main className="flex-1 bg-[#F4F5F7] p-4 md:p-6 overflow-y-auto space-y-5">
+      {/* ================= RIGHT MAIN AREA: EVALUATION RESULT CANVAS ================= */}
+      <main className="flex-1 p-5 md:p-6 overflow-y-auto space-y-5">
+        
+        {/* Global Inspection Header Card */}
+        <div className="space-y-1">
+          <h1 className="text-xl font-bold tracking-tight text-white">Evaluation Result</h1>
+          <div className="flex flex-wrap items-center gap-2 text-xs text-[#94A3B8]">
+            <span className="font-bold text-white uppercase tracking-wider bg-[#1E293B] px-2 py-0.5 rounded border border-[#334155]">
+              AI HCI AUDIT REPORT: Revenue Dashboard v1.2
+            </span>
+            <span>• Verified Timestamp: July 3, 2026 @ 12:33 AM</span>
+          </div>
+        </div>
+
+        {/* Executive Summary Dynamic Stripe Banner */}
+        <div className="bg-[#1E293B] border border-[#334155] rounded-lg p-4 flex flex-col sm:flex-row sm:items-center gap-3.5">
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">Executive Summary:</span>
+            <span className="bg-[#10B981]/20 text-[#10B981] border border-[#10B981]/40 font-bold text-xs px-2 py-0.5 rounded">
+              Good (82%)
+            </span>
+          </div>
+          <p className="text-xs text-[#94A3B8] font-medium leading-relaxed sm:border-l sm:border-[#334155] sm:pl-4">
+            Global executive Summary are good in societs for a sample dashboard UX analysis dashboard detailed, evidence-based data points mapped safely across production frameworks.
+          </p>
+        </div>
+
+        {/* TOP LAYOUT SPLIT GRID ROW: DIALS CARD & COLOR CONTRAST CARD */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
           
-          {activeApplication === 'cogniscan' && (
-            <div className="space-y-5">
-              
-              {/* Dropzone area triggers state change */}
-              {!scanComplete ? (
-                <div className="bg-white border border-[#DFE1E6] rounded-lg p-8 text-center max-w-2xl mx-auto shadow-xs space-y-4">
-                  <div className="border-2 border-dashed border-[#4C9AFF] bg-[#DEEBFF]/10 p-10 rounded-lg relative">
-                    <UploadCloud size={36} className="text-[#0052CC] mx-auto mb-2" />
-                    <span className="block font-bold text-xs text-[#0052CC]">Ingest Target Interface Viewport Screenshot</span>
-                    <Button appearance="primary" onClick={loadDemoMode} className="mt-4">Launch Interactive Enterprise Mock</Button>
-                    
-                    {isScanning && (
-                      <div className="absolute inset-0 bg-white/95 flex flex-col items-center justify-center p-4">
-                        <div className="w-10 h-10 rounded-full border-4 border-t-[#0052CC] border-r-transparent animate-spin mb-2"></div>
-                        <span className="text-xs font-bold text-[#091E42] tracking-wide animate-pulse">{scanPipelineStage}</span>
-                      </div>
-                    )}
+          {/* CARD 3: Cognitive Heuristics Dial Gauge Scores Row */}
+          <div className="xl:col-span-2 bg-[#1E293B] border border-[#334155] rounded-lg p-4 space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-white border-b border-[#334155] pb-2">
+              Cognitive Heuristics Scores (Miller's, Hick's)
+            </h3>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {/* Dial 1 */}
+              <div className="bg-[#0F172A] border border-[#334155] rounded-lg p-4 text-center">
+                <span className="text-[10px] font-bold text-[#94A3B8] uppercase block mb-2">Overall Cognitive Load</span>
+                <div className="inline-block relative w-20 h-10 overflow-hidden mb-1">
+                  <div className="absolute top-0 left-0 w-20 h-20 rounded-full border-8 border-b-transparent border-l-transparent border-t-[#F59E0B] border-r-[#F59E0B] rotate-45"></div>
+                </div>
+                <div className="text-sm font-bold text-[#F59E0B]">7.1/10 <span className="text-[10px] font-normal text-[#64748B]">(High)</span></div>
+              </div>
+
+              {/* Dial 2 */}
+              <div className="bg-[#0F172A] border border-[#334155] rounded-lg p-4 text-center">
+                <span className="text-[10px] font-bold text-[#94A3B8] uppercase block mb-2">Information Chunking (Miller's)</span>
+                <div className="inline-block relative w-20 h-10 overflow-hidden mb-1">
+                  <div className="absolute top-0 left-0 w-20 h-20 rounded-full border-8 border-b-transparent border-l-transparent border-t-[#10B981] border-r-[#10B981] rotate-12"></div>
+                </div>
+                <div className="text-sm font-bold text-[#10B981]">6.4/10</div>
+                <span className="text-[9px] text-[#64748B] block mt-0.5">Avoid &gt; 7 groups</span>
+              </div>
+
+              {/* Dial 3 */}
+              <div className="bg-[#0F172A] border border-[#334155] rounded-lg p-4 text-center">
+                <span className="text-[10px] font-bold text-[#94A3B8] uppercase block mb-2">Decision Speed (Hick's)</span>
+                <div className="inline-block relative w-20 h-10 overflow-hidden mb-1">
+                  <div className="absolute top-0 left-0 w-20 h-20 rounded-full border-8 border-b-transparent border-l-transparent border-t-[#EF4444] border-r-[#EF4444] rotate-45"></div>
+                </div>
+                <div className="text-sm font-bold text-[#EF4444]">7.8/10</div>
+                <span className="text-[9px] text-[#64748B] block mt-0.5">Excessive Filter Choices</span>
+              </div>
+            </div>
+          </div>
+
+          {/* CARD 4: Accessibility & Color Contrast Table Matrix */}
+          <div className="bg-[#1E293B] border border-[#334155] rounded-lg p-4 space-y-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-white border-b border-[#334155] pb-2">
+              Accessibility & Color Contrast (WCAG 2.1)
+            </h3>
+            <span className="text-[10px] text-[#64748B] block font-medium -mt-1">Color Contrast Violations (WCAG)</span>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs text-[#94A3B8]">
+                <thead>
+                  <tr className="border-b border-[#334155] text-[#64748B] bg-[#0F172A]">
+                    <th className="p-1.5 font-bold">Element</th>
+                    <th className="p-1.5 font-bold">Ratio</th>
+                    <th className="p-1.5 font-bold text-right">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#334155]">
+                  <tr>
+                    <td className="p-1.5 font-semibold text-white">Revenue Text</td>
+                    <td className="p-1.5 font-mono">7.1:1</td>
+                    <td className="p-1.5 text-right"><span className="bg-[#10B981]/20 text-[#10B981] px-1.5 py-0.5 rounded text-[9px] font-bold uppercase">Pass AAA</span></td>
+                  </tr>
+                  <tr>
+                    <td className="p-1.5 font-semibold text-white">Help Icon</td>
+                    <td className="p-1.5 font-mono">2.1:1</td>
+                    <td className="p-1.5 text-right"><span className="bg-[#EF4444]/20 text-[#EF4444] px-1.5 py-0.5 rounded text-[9px] font-bold uppercase">Fail AA</span></td>
+                  </tr>
+                  <tr>
+                    <td className="p-1.5 font-semibold text-white">Inactive Tab</td>
+                    <td className="p-1.5 font-mono">3.5:1</td>
+                    <td className="p-1.5 text-right"><span className="bg-[#EF4444]/20 text-[#EF4444] px-1.5 py-0.5 rounded text-[9px] font-bold uppercase">Fail AA</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* BOTTOM LAYOUT GRID ROW: VISUAL HEATMAP AND SPRINT REPOSITORY LOGS */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
+          
+          {/* CARD 5: Interaction Heuristics Visual Heatmap Bounding Boxes Container */}
+          <div className="xl:col-span-2 bg-[#1E293B] border border-[#334155] rounded-lg p-4 space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-white border-b border-[#334155] pb-2">
+              Interaction Heuristics (Fitts's, Visual Hierarchy)
+            </h3>
+
+            {/* Simulated Workspace Inspection Frame Box */}
+            <div className="border border-[#334155] rounded-lg bg-[#0F172A] p-4 relative overflow-hidden min-h-[340px] flex items-center justify-center">
+              {imageSrc ? (
+                <div className="relative inline-block max-w-full">
+                  <img src={imageSrc} alt="Audit Flat Target View" className="max-h-[300px] rounded border border-[#334155] object-contain" />
+                  
+                  {/* Absolute Mock Heatmap Badges layered exactly from reference layout visual */}
+                  <div className="absolute top-4 right-4 bg-[#10B981] text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow flex items-center gap-1">
+                    ✓ Primary CTA: Good Size & Position (Fitts's)
+                  </div>
+                  <div className="absolute bottom-6 left-12 bg-[#2563EB] text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow">
+                    ℹ Large Sizes Heat
+                  </div>
+                  <div className="absolute bottom-4 right-12 bg-[#EF4444] text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow flex items-center gap-1">
+                    ⚠ Clear Visual Hierarchy
                   </div>
                 </div>
               ) : (
-                
-                /* THE SPECIFIED EVALUATION RESULT GRID SYSTEM CANVAS */
-                <div className="space-y-5 max-w-6xl mx-auto">
-                  
-                  {/* CARD 1: EXPLICIT HCI REPORT HEADER ROW IDENTIFIER */}
-                  <div className="bg-white border border-[#DFE1E6] rounded p-4 shadow-xs flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <FileText className="text-[#0052CC]" size={18} />
-                      <div>
-                        <h2 className="text-sm font-bold text-[#091E42]">AI HCI AUDIT REPORT: Revenue Dashboard</h2>
-                        <span className="text-[10px] text-[#7A869A] block font-mono">Timestamped Cycle: July 3, 2026 @ 12:57 PM</span>
-                      </div>
-                    </div>
-                    <Lozenge appearance="success">AI-AVS Pass Verified</Lozenge>
-                  </div>
-
-                  {/* CARD 2: EXECUTIVE SUMMARY SUB HEADER ACCORDING TO USER LOG FOOTPRINT */}
-                  <div className="bg-white border border-[#DFE1E6] rounded p-4 shadow-xs flex items-start sm:items-center gap-4 border-l-4 border-l-[#36B37E]">
-                    <div className="shrink-0">
-                      <span className="text-[10px] font-bold uppercase text-[#6B778C] block mb-0.5">Executive Summary</span>
-                      <span className="inline-flex items-center bg-[#E3FCEF] text-[#006644] font-bold text-xs px-2 py-0.5 rounded-sm shadow-xs">Good (82%)</span>
-                    </div>
-                    <p className="text-xs text-[#42526E] font-medium leading-relaxed border-l pl-4 border-[#DFE1E6]">
-                      Global executive Summary are good in societs for a sample dashboard UX analysis dashboard detailed, evidence-based data. Layout targets provide high efficiency mappings across active usage parameters.
-                    </p>
-                  </div>
-
-                  {/* CARD 3: COGNITIVE HEURISTICS SCORES DIALS ROW FRAME WITH 3 GRAPH POINTER DIALS */}
-                  <div className="bg-white border border-[#DFE1E6] rounded p-4 shadow-xs space-y-4">
-                    <span className="text-xs font-bold uppercase tracking-wider text-[#6B778C] block border-b pb-1.5">Cognitive Heuristics Scores (Miller's, Hick's)</span>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {/* Subgraph Indicator 1 */}
-                      <div className="bg-[#FAFBFC] border border-[#EBECF0] rounded p-3 text-center">
-                        <span className="text-[10px] font-bold text-[#6B778C] uppercase block mb-1">Overall Cognitive Load</span>
-                        <div className="inline-block relative w-20 h-10 overflow-hidden mb-1">
-                          <div className="absolute top-0 left-0 w-20 h-20 rounded-full border-8 border-b-[#E3FCEF] border-l-[#E3FCEF] border-t-[#0052CC] border-r-[#0052CC] rotate-45"></div>
-                        </div>
-                        <div className="text-base font-bold text-[#091E42]">4.2 / 5.0</div>
-                        <span className="text-[9px] text-[#36B37E] font-bold block">Stable Processing Index</span>
-                      </div>
-
-                      {/* Subgraph Indicator 2 */}
-                      <div className="bg-[#FAFBFC] border border-[#EBECF0] rounded p-3 text-center">
-                        <span className="text-[10px] font-bold text-[#6B778C] uppercase block mb-1">Information Chunking (Miller's)</span>
-                        <div className="inline-block relative w-20 h-10 overflow-hidden mb-1">
-                          <div className="absolute top-0 left-0 w-20 h-20 rounded-full border-8 border-b-[#E3FCEF] border-l-[#E3FCEF] border-t-[#36B37E] border-r-[#36B37E] rotate-12"></div>
-                        </div>
-                        <div className="text-base font-bold text-[#36B37E]">{calcMillerScore} / 100</div>
-                        <span className="text-[9px] text-[#7A869A] block font-medium">Derived from {gestaltProximityGap}px gap parameters</span>
-                      </div>
-
-                      {/* Subgraph Indicator 3 */}
-                      <div className="bg-[#FAFBFC] border border-[#EBECF0] rounded p-3 text-center">
-                        <span className="text-[10px] font-bold text-[#6B778C] uppercase block mb-1">Decision Speed (Hick's Law)</span>
-                        <div className="inline-block relative w-20 h-10 overflow-hidden mb-1">
-                          <div className="absolute top-0 left-0 w-20 h-20 rounded-full border-8 border-b-[#E3FCEF] border-l-[#E3FCEF] border-t-[#FF991F] border-r-[#FF5630] rotate-45"></div>
-                        </div>
-                        <div className="text-base font-bold text-[#FF5630]">{calcHickScore} / 100</div>
-                        <span className="text-[9px] text-[#5E6C84] block font-medium">Active Load Level: {simulatedStressLevel}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* BOTTOM ARCHITECTURE GRIDS SPLIT ROW */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                    
-                    {/* CARD 4: ACCESSIBILITY & COLOR CONTRAST LOG */}
-                    <div className="bg-white border border-[#DFE1E6] rounded p-4 shadow-xs space-y-3">
-                      <span className="text-xs font-bold uppercase tracking-wider text-[#6B778C] block border-b pb-1.5">Accessibility & Color Contrast (WCAG 2.1)</span>
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-left text-xs text-[#172B4D]">
-                          <thead>
-                            <tr className="bg-[#FAFBFC] border-b text-[#6B778C] font-bold">
-                              <th className="p-2 text-[10px] uppercase">Interfacial Element Node</th>
-                              <th className="p-2 text-[10px] uppercase">Measured Ratio</th>
-                              <th className="p-2 text-[10px] uppercase text-right">Status Compliance</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-[#F4F5F7]">
-                            <tr>
-                              <td className="p-2 font-bold text-[#091E42]">Main Metric Large Display Text</td>
-                              <td className="p-2 font-mono text-[11px]">7.2:1</td>
-                              <td className="p-2 text-right"><span className="bg-[#E3FCEF] text-[#006644] text-[9px] px-1.5 py-0.5 rounded font-bold">Pass AAA</span></td>
-                            </tr>
-                            <tr>
-                              <td className="p-2 font-bold text-[#091E42]">Secondary Dynamic Action Anchor Labels</td>
-                              <td className="p-2 font-mono text-[11px]">3.1:1</td>
-                              <td className="p-2 text-right"><span className="bg-[#FFEBE6] text-[#BF2600] text-[9px] px-1.5 py-0.5 rounded font-bold">Fail AA</span></td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-
-                    {/* CARD 5: INTERACTION HEURISTICS VISUAL SANDBOX MAP BOX */}
-                    <div className="bg-white border border-[#DFE1E6] rounded p-4 shadow-xs space-y-3">
-                      <span className="text-xs font-bold uppercase tracking-wider text-[#6B778C] block border-b pb-1.5">Interaction Heuristics (Fitts's, Visual Hierarchy)</span>
-                      <div className="border bg-[#FAFBFC] rounded p-2 flex items-center justify-center relative min-h-[160px] shadow-inner">
-                        <img src={imageSrc} alt="Inspection flat blueprint target segment" className="max-h-[140px] rounded opacity-90 border border-[#DFE1E6]" />
-                        
-                        {/* Interactive Selection hit box tracking box mapping representation */}
-                        <div 
-                          style={{ width: `${fittsTargetDiameter}px`, height: `${fittsTargetDiameter}px` }}
-                          className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-dashed flex items-center justify-center text-[8px] font-bold ${fittsTargetDiameter >= 44 ? 'border-[#36B37E] bg-[#E3FCEF]/40 text-[#006644]' : 'border-[#FF5630] bg-[#FFEBE6]/50 text-[#BF2600]'}`}
-                        >
-                          {fittsTargetDiameter}px
-                        </div>
-                      </div>
-                    </div>
-
-                  </div>
-
-                  {/* CARD 6: FIX REPOSITORY SPREADSHEET TASK ACTIONS SCHEMAS LOG CONTAINER */}
-                  <div className="bg-white border border-[#DFE1E6] rounded p-4 shadow-xs space-y-3">
-                    <div className="flex justify-between items-center border-b pb-1.5">
-                      <span className="text-xs font-bold uppercase tracking-wider text-[#6B778C]">Fix Repository (Sprint Allocation Backlog)</span>
-                      <span className="text-[10px] bg-[#EBECF0] text-[#42526E] px-2 py-0.5 rounded font-bold">Dignity-First & Stress-First Grounded fixes</span>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                      <div className="p-3 bg-[#FAFBFC] border border-[#DFE1E6] rounded border-l-4 border-l-[#FF991F] space-y-1.5">
-                        <div className="flex justify-between font-bold">
-                          <span className="text-[#091E42]">UX-001: Implement Progressive Disclosure Panel Drawers</span>
-                          <span className="text-[10px] bg-[#DEEBFF] text-[#0747A6] px-1.5 rounded">Hick's Law</span>
-                        </div>
-                        <p className="text-[#42526E] font-normal">Collapse second-tier filter matrices to reduce task calculation time parameters under high operator operational fatigue cycles.</p>
-                        <div className="text-[10px] text-[#36B37E] font-bold pt-1">Estimated ROI Gain: Reduces step drop-off parameters by ~22%</div>
-                      </div>
-
-                      <div className="p-3 bg-[#FAFBFC] border border-[#DFE1E6] rounded border-l-4 border-l-[#FF5630] space-y-1.5">
-                        <div className="flex justify-between font-bold">
-                          <span className="text-[#091E42]">UX-002: Upscale Element Target Hit Dimensions</span>
-                          <span className="text-[10px] bg-[#DEEBFF] text-[#0747A6] px-1.5 rounded">Fitts's Law</span>
-                        </div>
-                        <p className="text-[#42526E] font-normal">Expand component layout interaction diameter to meet safe bounds criteria. Current setting measures below 44px rules.</p>
-                        <div className="text-[10px] text-[#36B37E] font-bold pt-1">Estimated ROI Gain: Boosts selection targeting speed mechanics by 28%</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <Button appearance="subtle" onClick={() => { setScanComplete(false); setImageSrc(null); }} icon={RefreshCw} className="mx-auto block">
-                    Clear Workspace Environment Ingestion Material
-                  </Button>
-
+                <div className="text-center p-6 text-[#64748B]">
+                  <Eye size={32} className="mx-auto text-[#475569] mb-1.5" />
+                  <p className="text-xs font-medium">No layout uploaded. Ingest design flat snapshot on the left panel to map inspection points.</p>
                 </div>
               )}
-
             </div>
-          )}
+          </div>
 
-          {/* APPLICATION TWO DEFAULT ALTERNATE SCREEN SWITCH BACKUP PANEL */}
-          {activeApplication === 'audit_tool' && (
-            <div className="p-6 text-center bg-white border border-[#DFE1E6] rounded max-w-lg mx-auto text-xs space-y-3 shadow-xs">
-              <ShieldAlert size={28} className="text-[#0052CC] mx-auto" />
-              <h3 className="font-bold text-[#091E42]">Text-Driven Audit Model Workspace Ready</h3>
-              <p className="text-[#5E6C84]">Switch application headers to return back to the interactive screenshot visual parser canvas overlay environment.</p>
+          {/* CARD 6: Actionable Sprint Fix Repository Backlog */}
+          <div className="bg-[#1E293B] border border-[#334155] rounded-lg p-4 space-y-3 flex flex-col justify-between">
+            <div className="space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-white border-b border-[#334155] pb-2">
+                Fix Repository
+              </h3>
+              <span className="text-[10px] text-[#64748B] block font-medium -mt-2">Prioritized Issues in lozenes, grounded in frameworks</span>
+
+              <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
+                {/* Repos card entry 1 */}
+                <div className="p-2.5 bg-[#0F172A] border-l-4 border-l-[#F59E0B] border border-[#334155] rounded-r text-xs space-y-1">
+                  <div className="flex justify-between font-bold text-white">
+                    <span className="text-[#F59E0B]">UX-002: Hidden Filters</span>
+                    <span className="text-[9px] bg-[#334155] px-1 rounded text-[#94A3B8]">Jakob's Law</span>
+                  </div>
+                  <p className="text-[#94A3B8] text-[11px]"><strong className="text-white">Solution:</strong> Move to horizontal bar structure config.</p>
+                  <div className="text-[10px] text-[#10B981] font-bold">ROI: Reduce task execution time bounds by 20%</div>
+                </div>
+
+                {/* Repos card entry 2 */}
+                <div className="p-2.5 bg-[#0F172A] border-l-4 border-l-[#EF4444] border border-[#334155] rounded-r text-xs space-y-1">
+                  <div className="flex justify-between font-bold text-white">
+                    <span className="text-[#EF4444]">UX-003: Filter Complexities</span>
+                    <span className="text-[9px] bg-[#334155] px-1 rounded text-[#94A3B8]">Hick's Law</span>
+                  </div>
+                  <p className="text-[#94A3B8] text-[11px]"><strong className="text-white">Solution:</strong> Group layout inputs beneath dynamic accordion layers.</p>
+                  <div className="text-[10px] text-[#10B981] font-bold">ROI: Boost operator sorting speed performance by 35%</div>
+                </div>
+              </div>
             </div>
-          )}
 
-        </main>
-      </div>
+            <div className="pt-2 border-t border-[#334155] text-right text-[10px] text-[#64748B] font-mono">
+              ENGINE INDEX READY • COMPILED SECURELY
+            </div>
+          </div>
+
+        </div>
+
+      </main>
     </div>
   );
 }
