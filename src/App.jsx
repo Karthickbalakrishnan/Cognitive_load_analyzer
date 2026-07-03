@@ -1,366 +1,446 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   UploadCloud, Sliders, ChevronDown, X, HelpCircle, AlertTriangle, 
-  CheckCircle2, Info, FileText, Search, RefreshCw, Eye, Layout
+  CheckCircle2, Info, FileText, Search, RefreshCw, Eye, Layout, 
+  History, Clock, CheckSquare, ShieldCheck, User, MapPin, Briefcase
 } from 'lucide-react';
 
 export default function App() {
-  // --- BLUEPRINT STATE PARAMETERS ---
+  // --- SYSTEM ROUTERS & CHANNELS ---
+  const [activeTab, setActiveTab] = useState('upload'); // 'upload' | 'history'
+  const [selectedIssueId, setSelectedIssueId] = useState(null);
+
+  // --- PARAMETRIC Blueprints STATE ---
   const [context, setContext] = useState('Analytics Dashboard');
   const [audience, setAudience] = useState('Expert Users');
   const [goal, setGoal] = useState('Revenue Filter');
   const [frameworks, setFrameworks] = useState(["Miller's", "WCAG", "Cognitive Load"]);
 
-  // --- CORE ENGINE PIPELINE STATES ---
+  // --- ANALYSIS ENGINE STATE PIPELINE ---
   const [imageSrc, setImageSrc] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [hasActiveData, setHasActiveData] = useState(false); // Controls active state validation
+  const [hasActiveData, setHasActiveData] = useState(false);
   const [scanPipelineStage, setScanPipelineStage] = useState('');
 
-  // --- DYNAMIC AI EXPERT RESULTS METRIC MATRIX ---
+  // --- HISTORY RECORDS STORE ---
+  const [selectedHistoryId, setSelectedHistoryId] = useState(null);
+  const historyProfiles = [
+    { id: 'HIST-01', name: 'Revenue Dashboard v1.2', context: 'Analytics Dashboard', audience: 'Expert Users', goal: 'Revenue Filter', date: 'July 3, 2026', globalScore: 82 },
+    { id: 'HIST-02', name: 'Transactional Checkout Flat', context: 'Transactional Checkout Flow', audience: 'General Consumers', goal: 'Minimize Input Delay Rates', date: 'June 28, 2026', globalScore: 64 }
+  ];
+
+  // --- HCI METRICS ENGINE MAIN DATA STRUCTURES ---
   const [evaluationPayload, setEvaluationPayload] = useState({
-    grade: "Pending Assessment",
-    percentage: 0,
-    executiveSummary: "Awaiting source layout processing payload. Upload a production interface wireframe blueprint or active screenshot flat to run multi-dimensional cognitive computing diagnostics.",
-    cognitiveLoad: { score: "0.0", status: "N/A" },
-    chunking: { score: "0.0", status: "N/A" },
-    decisionSpeed: { score: "0.0", status: "N/A" },
+    globalScore: 0,
+    grade: 'Pending Assessment',
+    executiveSummary: 'Awaiting source interface blueprint ingestion payload. Upload a system screenshot or activate a profile within your Evaluation History to construct live telemetry nodes.',
+    overallCognitiveLoad: '0.0/10',
+    chunkingScore: '0.0/10',
+    decisionSpeed: '0.0/10',
     contrastTable: [],
-    fixRepository: []
+    telemetryNodes: []
   });
 
-  // --- DYNAMIC PIPELINE MODIFIER TRIGGER ENGINE ---
-  const runAiHciAssessment = (uploadedImage) => {
+  // --- SIMULATION HARNESS RULES (GROUNDED TO WORKSPACE OVERRIDES) ---
+  const triggerHciTelemetryCompute = (sourceContext, sourceAudience, customScoreOverride = null) => {
     setIsAnalyzing(true);
     setHasActiveData(false);
-    
-    const processingStages = [
-      "AI-AVS Layout Grid Extraction...",
-      "Analyzing Chunking via Miller's Law Parameters...",
-      "Calculating Color Contrast Bounds Matrix...",
-      "Generating Stress-First Cognitive Target Weights..."
+
+    const stages = [
+      "AI-AVS Layout Mesh Generation...",
+      "Parsing Fitts's Target Bound Boxes...",
+      "Evaluating Gestalt Cluster Densities...",
+      "Finalizing Claude Vision JSON Schema Output..."
     ];
 
-    processingStages.forEach((stage, index) => {
+    stages.forEach((stage, index) => {
       setTimeout(() => {
         setScanPipelineStage(stage);
         
-        if (index === processingStages.length - 1) {
+        if (index === stages.length - 1) {
           setIsAnalyzing(false);
           setHasActiveData(true);
 
-          // Deep UX Expert Rule-Base: Compute specific detailed outputs grounded to specific configuration fields
-          const isB2BAnalytics = context === 'Analytics Dashboard';
-          const isExpert = audience === 'Expert Users';
-
+          const baseScore = customScoreOverride || (sourceContext === 'Analytics Dashboard' && sourceAudience === 'Expert Users' ? 82 : 64);
+          
           setEvaluationPayload({
-            grade: isB2BAnalytics ? "Good" : "Needs Review",
-            percentage: isB2BAnalytics && isExpert ? 82 : 64,
-            executiveSummary: `Global executive Summary are good in societs for a sample dashboard UX analysis dashboard detailed, evidence-based data. Optimized carefully for targeting criteria matching an objective configuration profile built around [${audience}] attempting [${goal}] workflows.`,
-            cognitiveLoad: { 
-              score: isB2BAnalytics ? "7.1/10" : "8.4/10", 
-              status: isB2BAnalytics ? "High Cognitive Burden" : "Critical Load Drop" 
-            },
-            chunking: { 
-              score: isExpert ? "6.4/10" : "4.8/10", 
-              status: "Avoid > 7 groups" 
-            },
-            decisionSpeed: { 
-              score: "7.8/10", 
-              status: "Excessive Filter Choices" 
-            },
+            globalScore: baseScore,
+            grade: baseScore >= 80 ? "Good" : "Needs Attention",
+            executiveSummary: `Global executive Summary are good in societies for a sample dashboard UX analysis dashboard detailed, evidence-based data. Calculated dynamically under active parameters configured for [${sourceAudience}] performing [${sourceContext}] loops.`,
+            overallCognitiveLoad: baseScore >= 80 ? "7.1/10 (High)" : "8.6/10 (Critical)",
+            chunkingScore: baseScore >= 80 ? "6.4/10" : "4.2/10",
+            decisionSpeed: baseScore >= 80 ? "7.8/10" : "9.1/10",
+            
             contrastTable: [
-              { element: "Primary Focus Title Text", ratio: "7.1:1", status: "Pass AAA", pass: true },
-              { element: "Sub-Header Context Label", ratio: isB2BAnalytics ? "4.8:1" : "3.2:1", status: isB2BAnalytics ? "Pass AA" : "Fail AA", pass: isB2BAnalytics },
-              { element: "Help Dynamic Anchor Icon", ratio: "2.1:1", status: "Fail AA", pass: false },
-              { element: "Inactive Workspace Tab Link", ratio: "3.5:1", status: "Fail AA", pass: false }
+              { element: "Revenue Text Display Node", foreground: "White", background: "Dark Blue", ratio: "7.1:1", status: "Pass AAA", pass: true },
+              { element: "Primary Sidebar Navigation Label", foreground: "Light Gray", background: "White", ratio: baseScore >= 80 ? "4.5:1" : "2.4:1", status: baseScore >= 80 ? "Pass AA" : "Fail AA", pass: baseScore >= 80 },
+              { element: "Help Descriptors Utility Icon", foreground: "Light Gray", background: "White", ratio: "2.1:1", status: "Fail AA", pass: false },
+              { element: "Inactive Alternative Interface Tab", foreground: "Gray", background: "White", ratio: "3.5:1", status: "Fail AA", pass: false }
             ],
-            fixRepository: [
-              { id: "UX-001", law: "Jakob's Law", name: "Hidden Filters", solution: "Move secondary inputs to horizontal structural toolbar configuration.", roi: "Reduce task navigation overhead by ~20%" },
-              { id: "UX-002", law: "Hick's Law", name: "Filter Complexities Array", solution: "Enforce progressive disclosure parameters under collapsible card systems.", roi: "Boost interactive decision speed calculations by 35%" },
-              { id: "UX-003", law: "Miller's Law", name: "Metric Group Volume Exceeded", solution: "Segment structural layout boundaries into clusters of max 5 active items.", roi: "Minimizes item identification errors under high processing pressure" }
+
+            telemetryNodes: [
+              { id: 'NODE-01', targetName: 'Global Top Navigation & Tabs Bar', pattern: 'Non-Standard Anchor Alignment', trackingTime: '420ms parsing delay', successRate: '94%', law: "Jakob's Law", explanation: 'Primary navigation nodes deviate 15% from anticipated enterprise configuration standards, creating spatial orientation friction.', solution: 'Reposition main system link nodes into standard horizontal alignment maps.', acknowledged: false },
+              { id: 'NODE-02', targetName: 'Advanced Parameter Filter Grid', pattern: 'Choice Overload Complexity Burst', trackingTime: '1850ms decision delay', successRate: '71%', law: "Hick's Law", explanation: 'Overloading concurrent option choices in a single viewport container triggers visual parsing paralysis.', solution: 'Enforce progressive disclosure patterns via interactive collapsible field filters.', acknowledged: false },
+              { id: 'NODE-03', targetName: 'Primary System CTA Execution Button', pattern: 'Bounding Box Sizing Delta', trackingTime: '210ms target discovery', successRate: '99%', law: "Fitts's Law", explanation: 'Button click surface meets the optimal target criteria layout footprint safely for high-volume operators.', solution: 'Maintain original component dimensional configurations.', acknowledged: false }
             ]
           });
         }
-      }, (index + 1) * 500);
+      }, (index + 1) * 350);
     });
   };
 
-  const handleDropzoneUpload = (e) => {
+  // --- ACTIONS HANDLERS ---
+  const handleFileUpload = (e) => {
     if (e.target.files && e.target.files[0]) {
       const reader = new FileReader();
       reader.onload = (event) => {
         setImageSrc(event.target.result);
-        runAiHciAssessment(event.target.result);
+        triggerHciTelemetryCompute(context, audience);
       };
       reader.readAsDataURL(e.target.files[0]);
     }
   };
 
-  const clearAnalysisSession = () => {
-    setImageSrc(null);
-    setHasActiveData(false);
-    setEvaluationPayload({
-      grade: "Pending Assessment",
-      percentage: 0,
-      executiveSummary: "Awaiting source layout processing payload. Upload a production interface wireframe blueprint or active screenshot flat to run multi-dimensional cognitive computing diagnostics.",
-      cognitiveLoad: { score: "0.0", status: "N/A" },
-      chunking: { score: "0.0", status: "N/A" },
-      decisionSpeed: { score: "0.0", status: "N/A" },
-      contrastTable: [],
-      fixRepository: []
-    });
+  const selectHistoryProfile = (profile) => {
+    setSelectedHistoryId(profile.id);
+    setContext(profile.context);
+    setAudience(profile.audience);
+    setGoal(profile.goal);
+    setImageSrc("https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80");
+    triggerHciTelemetryCompute(profile.context, profile.audience, profile.globalScore);
+  };
+
+  // Trigger dynamic re-calculation when any setup parameter changes during an active workspace session
+  useEffect(() => {
+    if (hasActiveData && !isAnalyzing) {
+      triggerHciTelemetryCompute(context, audience);
+    }
+  }, [context, audience, goal]);
+
+  const toggleAcknowledgeNode = (id) => {
+    setEvaluationPayload(prev => ({
+      ...prev,
+      telemetryNodes: prev.telemetryNodes.map(node => 
+        node.id === id ? { ...node, acknowledged: !node.acknowledged } : node
+      )
+    }));
   };
 
   return (
-    <div className="min-h-screen bg-[#0F172A] text-[#F8FAFC] font-sans antialiased flex flex-col md:flex-row select-none">
+    <div className="min-h-screen bg-[#FAFBFC] text-[#172B4D] font-sans antialiased flex flex-col md:flex-row border border-[#DFE1E6]">
       
-      {/* ================= SIDEBAR: AUDITOR SETUP CONTROLS ================= */}
-      <aside className="w-full md:w-80 bg-[#1E293B] border-r border-[#334155] flex flex-col shrink-0">
-        <div className="p-4 border-b border-[#334155] flex items-center gap-3">
-          <div className="w-8 h-8 bg-[#2563EB] rounded flex items-center justify-center text-white font-bold text-base shadow-sm">
-            ▲
-          </div>
-          <span className="text-sm font-bold tracking-wider uppercase text-white">Auditor Setup</span>
+      {/* ================= LEFT SIDEBAR: AUDITOR CONFIGURATION SHELL ================= */}
+      <aside className="w-full md:w-80 bg-white border-r border-[#DFE1E6] flex flex-col shrink-0">
+        
+        {/* Brand Block */}
+        <div className="p-4 border-b border-[#DFE1E6] bg-[#FAFBFC]">
+          <h1 className="text-sm font-bold text-[#0052CC] tracking-wide uppercase">CogniScan</h1>
+          <span className="text-[11px] text-[#5E6C84] font-medium block mt-0.5">UX Cognitive Load Analyser</span>
         </div>
 
-        <div className="flex border-b border-[#334155] px-2 text-xs">
-          <button className="py-3 px-3 font-bold border-b-2 text-[#38BDF8] border-[#38BDF8]">
-            Upload New Screenshot
+        {/* Tab Selection Strips */}
+        <div className="flex border-b border-[#DFE1E6] px-2 text-xs bg-[#FAFBFC]">
+          <button 
+            onClick={() => setActiveTab('upload')}
+            className={`py-3 px-3 font-semibold border-b-2 transition-colors flex items-center gap-1.5 ${activeTab === 'upload' ? 'text-[#0052CC] border-[#0052CC]' : 'text-[#5E6C84] border-transparent hover:text-[#172B4D]'}`}
+          >
+            <UploadCloud size={14} /> Analysis Input
           </button>
-          <button className="py-3 px-3 font-semibold text-[#94A3B8] hover:text-white transition-colors">
-            Evaluation History (14)
+          <button 
+            onClick={() => setActiveTab('history')}
+            className={`py-3 px-3 font-semibold border-b-2 transition-colors flex items-center gap-1.5 ${activeTab === 'history' ? 'text-[#0052CC] border-[#0052CC]' : 'text-[#5E6C84] border-transparent hover:text-[#172B4D]'}`}
+          >
+            <History size={14} /> History Profile ({historyProfiles.length})
           </button>
         </div>
 
-        <div className="p-4 flex-1 overflow-y-auto space-y-6 text-xs">
+        {/* Form Controls Area */}
+        <div className="p-4 flex-1 overflow-y-auto space-y-5 text-xs">
           
-          {/* Workspace File Dropzone */}
-          <div className="space-y-2.5">
-            <h3 className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider">Analysis Input Workspace</h3>
-            <label className="border-2 border-dashed border-[#38BDF8] bg-[#0284C7]/5 rounded-lg p-6 block text-center cursor-pointer hover:bg-[#0284C7]/15 transition relative overflow-hidden">
-              <input type="file" className="hidden" accept="image/*" onChange={handleDropzoneUpload} />
-              <UploadCloud size={32} className="mx-auto text-[#38BDF8] mb-1.5" />
-              <p className="font-bold text-[#38BDF8]">Drop screenshot for HCI Audit</p>
-              <p className="text-[#64748B] mt-0.5">Scans dimensions automatically</p>
+          {activeTab === 'upload' ? (
+            <div className="space-y-2">
+              <label className="border-2 border-dashed border-[#4C9AFF] bg-[#DEEBFF]/20 rounded p-5 block text-center cursor-pointer hover:bg-[#DEEBFF]/40 transition relative overflow-hidden">
+                <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} />
+                <UploadCloud size={28} className="mx-auto text-[#0052CC] mb-1.5" />
+                <p className="font-bold text-[#0052CC]">Ingest Interface Screenshot</p>
+                <p className="text-[#5E6C84] text-[10px] mt-0.5">Automated AI Inspection Vector</p>
 
-              {isAnalyzing && (
-                <div className="absolute inset-0 bg-[#1E293B] flex flex-col items-center justify-center p-3 text-center">
-                  <RefreshCw className="animate-spin text-[#38BDF8] mb-2" size={24} />
-                  <span className="font-bold text-white tracking-wide animate-pulse text-[11px]">{scanPipelineStage}</span>
+                {isAnalyzing && (
+                  <div className="absolute inset-0 bg-white/95 flex flex-col items-center justify-center p-2">
+                    <RefreshCw className="animate-spin text-[#0052CC] mb-2" size={20} />
+                    <span className="font-bold text-[#172B4D] animate-pulse text-[10px]">{scanPipelineStage}</span>
+                  </div>
+                )}
+              </label>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <span className="text-[10px] font-bold text-[#6B778C] uppercase block tracking-wider">Select Historical Run</span>
+              {historyProfiles.map(p => (
+                <div 
+                  key={p.id} 
+                  onClick={() => selectHistoryProfile(p)}
+                  className={`p-2.5 border rounded cursor-pointer transition-colors ${selectedHistoryId === p.id ? 'bg-[#DEEBFF] border-[#4C9AFF]' : 'bg-[#FAFBFC] hover:bg-[#EBECF0] border-[#DFE1E6]'}`}
+                >
+                  <div className="font-bold text-[#091E42]">{p.name}</div>
+                  <div className="text-[10px] text-[#5E6C84] mt-0.5">{p.date} • Score: {p.globalScore}%</div>
                 </div>
-              )}
-            </label>
-          </div>
+              ))}
+            </div>
+          )}
 
-          {/* Audit parameters panel inputs */}
-          <div className="space-y-4 pt-4 border-t border-[#334155]">
-            <h3 className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider">Audit Parameters</h3>
+          {/* Configuration Fields Parameters */}
+          <div className="space-y-4 pt-4 border-t border-[#DFE1E6]">
+            <span className="text-[10px] font-bold text-[#6B778C] uppercase tracking-wider block">Audit Parameters Matrix</span>
             
             <div>
-              <label className="block font-bold text-[#94A3B8] mb-1">Context Blueprint</label>
+              <label className="block font-semibold text-[#5E6C84] mb-1">Context</label>
               <div className="relative">
-                <select value={context} onChange={(e) => setContext(e.target.value)} className="w-full bg-[#0F172A] border border-[#334155] text-white rounded p-2 pr-8 appearance-none focus:outline-none focus:ring-1 focus:ring-[#38BDF8]">
+                <select value={context} onChange={(e) => setContext(e.target.value)} className="w-full bg-[#FAFBFC] border border-[#DFE1E6] rounded p-2 pr-8 appearance-none focus:outline-none focus:ring-2 focus:ring-[#4C9AFF]">
                   <option>Analytics Dashboard</option>
-                  <option>E-commerce Checkout Flow</option>
-                  <option>Emergency Dispatch Center CRM</option>
+                  <option>Transactional Checkout Flow</option>
+                  <option>Emergency Dispatch CRM Portal</option>
                 </select>
-                <ChevronDown size={14} className="absolute right-2.5 top-3 text-[#64748B] pointer-events-none" />
+                <ChevronDown size={14} className="absolute right-2 top-2.5 text-[#5E6C84] pointer-events-none" />
               </div>
             </div>
 
             <div>
-              <label className="block font-bold text-[#94A3B8] mb-1">Target Audience Profile</label>
+              <label className="block font-semibold text-[#5E6C84] mb-1">Audience</label>
               <div className="relative">
-                <select value={audience} onChange={(e) => setAudience(e.target.value)} className="w-full bg-[#0F172A] border border-[#334155] text-white rounded p-2 pr-8 appearance-none focus:outline-none focus:ring-1 focus:ring-[#38BDF8]">
+                <select value={audience} onChange={(e) => setAudience(e.target.value)} className="w-full bg-[#FAFBFC] border border-[#DFE1E6] rounded p-2 pr-8 appearance-none focus:outline-none focus:ring-2 focus:ring-[#4C9AFF]">
                   <option>Expert Users</option>
-                  <option>General Consumer Pool</option>
+                  <option>General Consumers</option>
                 </select>
-                <ChevronDown size={14} className="absolute right-2.5 top-3 text-[#64748B] pointer-events-none" />
+                <ChevronDown size={14} className="absolute right-2 top-2.5 text-[#5E6C84] pointer-events-none" />
               </div>
             </div>
 
             <div>
-              <label className="block font-bold text-[#94A3B8] mb-1">Objective Goal Direction</label>
+              <label className="block font-semibold text-[#5E6C84] mb-1">Goal</label>
               <div className="relative">
-                <select value={goal} onChange={(e) => setGoal(e.target.value)} className="w-full bg-[#0F172A] border border-[#334155] text-white rounded p-2 pr-8 appearance-none focus:outline-none focus:ring-1 focus:ring-[#38BDF8]">
+                <select value={goal} onChange={(e) => setGoal(e.target.value)} className="w-full bg-[#FAFBFC] border border-[#DFE1E6] rounded p-2 pr-8 appearance-none focus:outline-none focus:ring-2 focus:ring-[#4C9AFF]">
                   <option>Revenue Filter</option>
                   <option>Minimize Input Delay Rates</option>
                 </select>
-                <ChevronDown size={14} className="absolute right-2.5 top-3 text-[#64748B] pointer-events-none" />
+                <ChevronDown size={14} className="absolute right-2 top-2.5 text-[#5E6C84] pointer-events-none" />
               </div>
             </div>
+          </div>
+        </div>
 
-            <div>
-              <label className="block font-bold text-[#94A3B8] mb-1">Framework Guidelines (Active)</label>
-              <div className="flex flex-wrap gap-1 bg-[#0F172A] border border-[#334155] p-2 rounded min-h-[40px]">
-                {frameworks.map(fw => (
-                  <span key={fw} className="inline-flex items-center gap-1 bg-[#334155] text-white px-2 py-0.5 rounded text-[11px] font-semibold">
-                    {fw}
-                    <button onClick={() => removeFramework(fw)} className="hover:bg-[#475569] rounded-full p-0.5"><X size={10} /></button>
-                  </span>
-                ))}
-              </div>
-            </div>
+        {/* ================= DEVELOPER METADATA FOOTER (Karthick Balakrishnan) ================= */}
+        <div className="p-3 border-t border-[#DFE1E6] bg-[#FAFBFC] text-[11px] text-[#42526E] space-y-1">
+          <div className="text-[10px] uppercase font-bold tracking-wider text-[#6B778C] flex items-center gap-1">
+            <User size={12} className="text-[#0052CC]" /> Developed By
+          </div>
+          <div className="font-bold text-[#091E42]">Karthick Balakrishnan</div>
+          <div className="text-[#5E6C84] leading-tight space-y-0.5">
+            <div className="flex items-center gap-1"><Briefcase size={10} /> HCI Researcher & UX Tech Lead</div>
+            <div className="flex items-center gap-1"><Clock size={10} /> 15+ Years Industry Experience</div>
+            <div className="flex items-center gap-1"><MapPin size={10} /> Chennai, India</div>
           </div>
         </div>
       </aside>
 
-      {/* ================= MAIN DASHBOARD CONTENT AREA ================= */}
+      {/* ================= RIGHT WORKSPACE CANVAS PANEL ================= */}
       <main className="flex-1 p-4 md:p-6 overflow-y-auto space-y-5">
         
-        {/* Title Node Row */}
-        <div className="flex justify-between items-center bg-[#1E293B] border border-[#334155] p-4 rounded-lg">
-          <div className="space-y-0.5">
-            <h1 className="text-lg font-bold tracking-tight text-white">Evaluation Result</h1>
-            <p className="text-xs text-[#94A3B8] font-medium">
-              AI HCI AUDIT REPORT: {hasActiveData ? `${context} Analysis Model` : "Waiting for Input Snapshot..."}
-            </p>
+        {/* Card 1: Core Action Header Node */}
+        <div className="bg-white border border-[#DFE1E6] rounded p-4 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h2 className="text-base font-bold text-[#091E42]">Evaluation Result</h2>
+            <div className="text-xs text-[#5E6C84] font-medium mt-0.5 flex items-center gap-1">
+              <FileText size={14} className="text-[#0052CC]" /> AI HCI AUDIT REPORT: {hasActiveData ? context : "Awaiting System Blueprint Asset"}
+            </div>
           </div>
           {hasActiveData && (
-            <button onClick={clearAnalysisSession} className="text-xs font-semibold text-[#94A3B8] hover:text-[#EF4444] border border-[#334155] px-2.5 py-1.5 rounded bg-[#0F172A] transition-colors">
-              Reset Audit Workspace
-            </button>
+            <span className="text-[10px] font-mono bg-[#EBECF0] px-2 py-0.5 border rounded text-[#42526E]">
+              Current Index: {evaluationPayload.globalScore}%
+            </span>
           )}
         </div>
 
-        {/* EXECUTIVE SUMMARY DISCLOSURE CARD */}
-        <div className={`border rounded-lg p-4 transition-all flex flex-col sm:flex-row sm:items-center gap-4 ${hasActiveData ? 'bg-[#1E293B] border-[#334155] border-l-4 border-l-[#10B981]' : 'bg-[#1E293B]/40 border-[#334155]/60 opacity-60'}`}>
+        {/* Card 2: Executive Summary */}
+        <div className={`border rounded p-4 flex flex-col sm:flex-row sm:items-center gap-4 transition-all ${hasActiveData ? 'bg-white border-[#DFE1E6] border-l-4 border-l-[#36B37E]' : 'bg-[#FAFBFC] border-[#DFE1E6] opacity-50'}`}>
           <div className="shrink-0 space-y-0.5">
-            <span className="text-[10px] font-bold text-[#64748B] uppercase block">Executive Summary</span>
-            <span className={`inline-block font-bold text-xs px-2 py-0.5 rounded ${hasActiveData ? 'bg-[#10B981]/20 text-[#10B981] border border-[#10B981]/30' : 'bg-[#334155] text-[#64748B]'}`}>
-              {hasActiveData ? `${evaluationPayload.grade} (${evaluationPayload.percentage}%)` : "Locked"}
+            <span className="text-[10px] font-bold text-[#6B778C] uppercase block">Executive Summary</span>
+            <span className={`inline-block font-bold text-xs px-2 py-0.5 rounded ${hasActiveData ? 'bg-[#E3FCEF] text-[#006644]' : 'bg-[#EBECF0] text-[#7A869A]'}`}>
+              {hasActiveData ? `${evaluationPayload.grade} (${evaluationPayload.globalScore}%)` : 'Locked'}
             </span>
           </div>
-          <p className="text-xs text-[#94A3B8] font-medium leading-relaxed sm:border-l sm:border-[#334155] sm:pl-4">
+          <p className="text-xs text-[#42526E] font-medium leading-relaxed sm:border-l sm:pl-4 border-[#DFE1E6]">
             {evaluationPayload.executiveSummary}
           </p>
         </div>
 
-        {/* COGNITIVE HEURISTICS THREE METRIC DIAL BOX CARD */}
-        <div className={`bg-[#1E293B] border border-[#334155] rounded-lg p-4 space-y-4 transition-all ${hasActiveData ? '' : 'opacity-40 pointer-events-none'}`}>
-          <span className="text-xs font-bold text-white uppercase tracking-wider block border-b border-[#334155] pb-2">
+        {/* Card 3: Cognitive Heuristics Dial Scores */}
+        <div className={`bg-white border border-[#DFE1E6] rounded p-4 space-y-4 transition-all ${hasActiveData ? '' : 'opacity-40 pointer-events-none'}`}>
+          <span className="text-xs font-bold text-[#091E42] uppercase tracking-wider block border-b border-[#FAFBFC] pb-2">
             Cognitive Heuristics Scores (Miller's, Hick's)
           </span>
           
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {/* Dial Slot 1 */}
-            <div className="bg-[#0F172A] border border-[#334155] rounded-lg p-4 text-center">
-              <span className="text-[10px] font-bold text-[#64748B] uppercase block mb-2">Overall Cognitive Load</span>
-              <div className="inline-block relative w-20 h-10 overflow-hidden mb-1">
-                <div className={`absolute top-0 left-0 w-20 h-20 rounded-full border-8 border-b-transparent border-l-transparent rotate-45 transition-colors ${hasActiveData ? 'border-t-[#F59E0B] border-r-[#F59E0B]' : 'border-t-[#334155] border-r-[#334155]'}`}></div>
+            <div className="bg-[#FAFBFC] border border-[#EBECF0] rounded p-3 text-center">
+              <span className="text-[10px] font-bold text-[#6B778C] uppercase block mb-1">Overall Cognitive Load</span>
+              <div className="inline-block relative w-16 h-8 overflow-hidden mb-1">
+                <div className={`absolute top-0 left-0 w-16 h-16 rounded-full border-4 border-b-transparent border-l-transparent rotate-45 ${hasActiveData ? 'border-t-[#FF991F] border-r-[#FF991F]' : 'border-[#DFE1E6]'}`}></div>
               </div>
-              <div className="text-sm font-bold text-white">{evaluationPayload.cognitiveLoad.score}</div>
-              <span className="text-[9px] text-[#94A3B8] block mt-0.5 font-medium">{evaluationPayload.cognitiveLoad.status}</span>
+              <div className="text-sm font-bold text-[#091E42]">{evaluationPayload.overallCognitiveLoad}</div>
             </div>
 
-            {/* Dial Slot 2 */}
-            <div className="bg-[#0F172A] border border-[#334155] rounded-lg p-4 text-center">
-              <span className="text-[10px] font-bold text-[#64748B] uppercase block mb-2">Information Chunking (Miller's)</span>
-              <div className="inline-block relative w-20 h-10 overflow-hidden mb-1">
-                <div className={`absolute top-0 left-0 w-20 h-20 rounded-full border-8 border-b-transparent border-l-transparent rotate-12 transition-colors ${hasActiveData ? 'border-t-[#10B981] border-r-[#10B981]' : 'border-t-[#334155] border-r-[#334155]'}`}></div>
+            <div className="bg-[#FAFBFC] border border-[#EBECF0] rounded p-3 text-center">
+              <span className="text-[10px] font-bold text-[#6B778C] uppercase block mb-1">Information Chunking</span>
+              <div className="inline-block relative w-16 h-8 overflow-hidden mb-1">
+                <div className={`absolute top-0 left-0 w-16 h-16 rounded-full border-4 border-b-transparent border-l-transparent rotate-12 ${hasActiveData ? 'border-t-[#36B37E] border-r-[#36B37E]' : 'border-[#DFE1E6]'}`}></div>
               </div>
-              <div className="text-sm font-bold text-white">{evaluationPayload.chunking.score}</div>
-              <span className="text-[9px] text-[#64748B] block mt-0.5 font-bold uppercase tracking-wider">{evaluationPayload.chunking.status}</span>
+              <div className="text-sm font-bold text-[#091E42]">{evaluationPayload.chunkingScore}</div>
+              <span className="text-[9px] text-[#7A869A] block font-medium">Avoid &gt; 7 groups</span>
             </div>
 
-            {/* Dial Slot 3 */}
-            <div className="bg-[#0F172A] border border-[#334155] rounded-lg p-4 text-center">
-              <span className="text-[10px] font-bold text-[#64748B] uppercase block mb-2">Decision Speed (Hick's Law)</span>
-              <div className="inline-block relative w-20 h-10 overflow-hidden mb-1">
-                <div className={`absolute top-0 left-0 w-20 h-20 rounded-full border-8 border-b-transparent border-l-transparent rotate-45 transition-colors ${hasActiveData ? 'border-t-[#EF4444] border-r-[#EF4444]' : 'border-t-[#334155] border-r-[#334155]'}`}></div>
+            <div className="bg-[#FAFBFC] border border-[#EBECF0] rounded p-3 text-center">
+              <span className="text-[10px] font-bold text-[#6B778C] uppercase block mb-1">Decision Speed (Hick's)</span>
+              <div className="inline-block relative w-16 h-8 overflow-hidden mb-1">
+                <div className={`absolute top-0 left-0 w-16 h-16 rounded-full border-4 border-b-transparent border-l-transparent rotate-45 ${hasActiveData ? 'border-t-[#FF5630] border-r-[#FF5630]' : 'border-[#DFE1E6]'}`}></div>
               </div>
-              <div className="text-sm font-bold text-white">{evaluationPayload.decisionSpeed.score}</div>
-              <span className="text-[9px] text-[#94A3B8] block mt-0.5 font-medium">{evaluationPayload.decisionSpeed.status}</span>
+              <div className="text-sm font-bold text-[#091E42]">{evaluationPayload.decisionSpeed}</div>
+              <span className="text-[9px] text-[#7A869A] block font-medium">Excessive Filter Choices</span>
             </div>
           </div>
         </div>
 
-        {/* BOTTOM METRIC MATRIX CONFIGURATION ROWS */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        {/* MIDDLE SECTION SHIFT LAYER */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
           
-          {/* ACCESSIBILITY & COLOR CONTRAST (WCAG 2.1) MATRIX CARD */}
-          <div className={`bg-[#1E293B] border border-[#334155] rounded-lg p-4 space-y-3 transition-all ${hasActiveData ? '' : 'opacity-40 pointer-events-none'}`}>
-            <span className="text-xs font-bold uppercase tracking-wider text-white block border-b border-[#334155] pb-1.5">
-              Accessibility & Color Contrast (WCAG 2.1)
-            </span>
-            
+          {/* Card 5: Interaction Heuristics Interactive Canvas Mapping (Image Overlay) */}
+          <div className={`xl:col-span-2 bg-white border border-[#DFE1E6] rounded p-4 space-y-4 transition-all ${hasActiveData ? '' : 'opacity-40 pointer-events-none'}`}>
+            <div className="border-b pb-2 flex justify-between items-center">
+              <span className="text-xs font-bold text-[#091E42] uppercase tracking-wider">Interaction Heuristics (Fitts's, Visual Hierarchy)</span>
+              <span className="text-[10px] text-[#5E6C84] bg-[#FAFBFC] px-1.5 border rounded">Click pins to audit elements</span>
+            </div>
+
+            <div className="border bg-[#FAFBFC] rounded p-2 flex items-center justify-center relative min-h-[300px] shadow-inner">
+              {imageSrc ? (
+                <div className="relative inline-block max-w-full">
+                  <img src={imageSrc} alt="Inspection Mapping Frame Layout" className="max-h-[340px] rounded object-contain border border-[#DFE1E6]" />
+                  
+                  {/* Dynamic Absolute Pin Markers Layers */}
+                  {evaluationPayload.telemetryNodes.map((node, i) => (
+                    <button
+                      key={node.id}
+                      onClick={() => setSelectedIssueId(node.id)}
+                      style={{ top: `${25 + (i * 20)}%`, left: `${30 + (i * 18)}%` }}
+                      className={`absolute w-6 h-6 -ml-3 -mt-3 rounded-full flex items-center justify-center text-[10px] font-bold font-mono shadow-md transition-transform hover:scale-125 ring-2 ring-white ${node.acknowledged ? 'bg-[#36B37E] text-white' : 'bg-[#FF5630] text-white'}`}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center p-6 text-[#7A869A] text-xs">
+                  <Eye size={24} className="mx-auto mb-1 text-[#A5B2C6]" />
+                  Upload screen asset to initialize click-to-inspect framework layers.
+                </div>
+              )}
+            </div>
+
+            {/* LIVE DYNAMIC ELEMENT ANALYSIS VIEWPORT */}
+            {selectedIssueId && (
+              <div className="bg-[#FAFBFC] border border-[#DEEBFF] p-3 rounded text-xs space-y-2 animate-fadeIn">
+                {(() => {
+                  const node = evaluationPayload.telemetryNodes.find(n => n.id === selectedIssueId);
+                  if (!node) return null;
+                  return (
+                    <>
+                      <div className="flex justify-between items-center border-b pb-1">
+                        <strong className="text-[#091E42]">{node.targetName}</strong>
+                        <span className="text-[10px] bg-[#DEEBFF] text-[#0747A6] px-2 py-0.5 rounded font-bold font-mono">{node.law}</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 text-[11px] text-[#42526E] bg-white p-2 rounded border">
+                        <div className="flex items-center gap-1"><Clock size={12} className="text-[#0052CC]" /> <strong>Task Parse Clock:</strong> {node.trackingTime}</div>
+                        <div className="flex items-center gap-1"><ShieldCheck size={12} className="text-[#36B37E]" /> <strong>Success Accuracy:</strong> {node.successRate}</div>
+                      </div>
+                      <p className="text-[#42526E] leading-relaxed"><strong className="text-[#091E42]">Vulnerability Definition:</strong> {node.explanation}</p>
+                      <div className="pt-2 flex justify-between items-center">
+                        <span className="text-[11px] font-medium text-[#5E6C84]">Vector Fix: <strong className="text-[#172B4D]">{node.solution}</strong></span>
+                        <button 
+                          onClick={() => toggleAcknowledgeNode(node.id)}
+                          className={`px-2 py-1 rounded text-[10px] font-bold shadow-xs flex items-center gap-1 ${node.acknowledged ? 'bg-[#E3FCEF] text-[#006644]' : 'bg-[#0052CC] text-white hover:bg-[#0747A6]'}`}
+                        >
+                          <CheckSquare size={12} /> {node.acknowledged ? 'Acknowledged Log' : 'Acknowledge Issue'}
+                        </button>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+            )}
+          </div>
+
+          {/* Card 4: Accessibility & Color Contrast (WCAG 2.1) Table Matrix */}
+          <div className={`bg-white border border-[#DFE1E6] rounded p-4 space-y-3 transition-all ${hasActiveData ? '' : 'opacity-40 pointer-events-none'}`}>
+            <span className="text-xs font-bold uppercase tracking-wider text-[#6B778C] block border-b pb-1.5">Accessibility & Color Contrast (WCAG 2.1)</span>
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-[#94A3B8]">
+              <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="bg-[#0F172A] border-b border-[#334155] text-[#64748B] font-bold">
-                    <th className="p-2">Target Node Element</th>
-                    <th className="p-2">Measured Ratio</th>
-                    <th className="p-2 text-right">Compliance</th>
+                  <tr className="bg-[#FAFBFC] border-b border-[#DFE1E6] text-[#6B778C] font-bold">
+                    <th className="p-1.5 text-[10px]">Element Component</th>
+                    <th className="p-1.5 text-[10px]">Ratio</th>
+                    <th className="p-1.5 text-[10px] text-right">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#334155]">
-                  {hasActiveData ? (
-                    evaluationPayload.contrastTable.map((issue, idx) => (
-                      <tr key={idx} className="hover:bg-[#0F172A]/40 transition-colors">
-                        <td className="p-2 font-bold text-white">{issue.element}</td>
-                        <td className="p-2 font-mono text-[11px] text-[#38BDF8]">{issue.ratio}</td>
-                        <td className="p-2 text-right">
-                          <span className={`inline-block text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${issue.pass ? 'bg-[#10B981]/20 text-[#10B981]' : 'bg-[#EF4444]/20 text-[#EF4444]'}`}>
-                            {issue.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={3} className="p-4 text-center italic text-[#64748B]">Awaiting visual matrix ingestion payload.</td>
+                <tbody className="divide-y divide-[#F4F5F7] font-medium text-[#42526E]">
+                  {evaluationPayload.contrastTable.map((row, idx) => (
+                    <tr key={idx} className="hover:bg-[#FAFBFC]">
+                      <td className="p-1.5 text-[#091E42] font-semibold">{row.element}</td>
+                      <td className="p-1.5 font-mono text-[11px]">{row.ratio}</td>
+                      <td className="p-1.5 text-right">
+                        <span className={`inline-block px-1.5 py-0.5 rounded text-[9px] font-bold ${row.pass ? 'bg-[#E3FCEF] text-[#006644]' : 'bg-[#FFEBE6] text-[#BF2600]'}`}>
+                          {row.status}
+                        </span>
+                      </td>
                     </tr>
-                  )}
+                  ))}
                 </tbody>
               </table>
             </div>
           </div>
 
-          {/* INTERACTION HEURISTICS (FITTS'S, VISUAL HIERARCHY OVERLAY CARD) */}
-          <div className={`bg-[#1E293B] border border-[#334155] rounded-lg p-4 space-y-3 transition-all ${hasActiveData ? '' : 'opacity-40 pointer-events-none'}`}>
-            <span className="text-xs font-bold uppercase tracking-wider text-white block border-b border-[#334155] pb-1.5">
-              Interaction Heuristics (Fitts's, Visual Hierarchy)
-            </span>
-            <div className="border border-[#334155] rounded-lg bg-[#0F172A] p-2 min-h-[160px] flex items-center justify-center relative shadow-inner">
-              {imageSrc ? (
-                <div className="relative inline-block max-w-full">
-                  <img src={imageSrc} alt="Audit Targeting Ingestion Frame" className="max-h-[140px] rounded object-contain border border-[#334155]" />
-                  <div className="absolute top-2 right-2 bg-[#10B981] text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-md animate-pulse">✓ Primary CTA Configured</div>
-                  <div className="absolute bottom-2 left-4 bg-[#2563EB] text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-md">ℹ Visual Heatmap Active</div>
-                </div>
-              ) : (
-                <div className="text-center text-[#64748B] p-4">
-                  <Eye size={28} className="mx-auto mb-1 text-[#475569]" />
-                  <p className="text-[11px] font-medium mt-1">Telemetry mapping elements require an active source flat image upload script.</p>
-                </div>
-              )}
-            </div>
-          </div>
-
         </div>
 
-        {/* SPRINT ACTION REPOSITORY MATRIX ASSIGNMENTS BACKLOG */}
-        <div className={`bg-[#1E293B] border border-[#334155] rounded-lg p-4 space-y-3.5 transition-all ${hasActiveData ? '' : 'opacity-40 pointer-events-none'}`}>
-          <div className="flex justify-between items-center border-b border-[#334155] pb-2">
-            <span className="text-xs font-bold text-white uppercase tracking-wider">Fix Repository Backlog Matrix</span>
-            <span className="text-[10px] text-[#64748B] font-bold uppercase">Engineering Targets</span>
+        {/* Card 6: Interactive Issues Summary Read & Acknowledge List */}
+        <div className={`bg-white border border-[#DFE1E6] rounded p-4 space-y-3.5 transition-all ${hasActiveData ? '' : 'opacity-40 pointer-events-none'}`}>
+          <div className="border-b pb-2 flex justify-between items-center">
+            <span className="text-xs font-bold text-[#091E42] uppercase tracking-wider">Observed Interface Issues & Action Logs Checklist</span>
+            <span className="text-[10px] text-[#5E6C84] font-medium">Acknowledge each finding to commit to sprint backlog</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+          <div className="space-y-2 max-h-[220px] overflow-y-auto">
             {hasActiveData ? (
-              evaluationPayload.fixRepository.map((item) => (
-                <div key={item.id} className="p-3 bg-[#0F172A] border border-[#334155] rounded-lg border-l-4 border-l-[#FF991F] space-y-1.5 hover:border-[#4C9AFF] transition-all">
-                  <div className="flex justify-between font-bold items-center">
-                    <span className="text-[#FF991F] font-mono text-[11px]">{item.id} • {item.name}</span>
-                    <span className="text-[9px] bg-[#334155] px-1.5 rounded text-[#94A3B8] font-medium">{item.law}</span>
+              evaluationPayload.telemetryNodes.map((issue) => (
+                <div 
+                  key={issue.id} 
+                  className={`p-3 border rounded border-l-4 transition-all flex items-start justify-between gap-4 ${issue.acknowledged ? 'border-l-[#36B37E] bg-[#E3FCEF]/20 opacity-75' : 'border-l-[#FF991F] bg-[#FAFBFC]'}`}
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-xs text-[#091E42]">{issue.targetName}</span>
+                      <span className="text-[9px] bg-[#EBECF0] px-1.5 rounded text-[#42526E] font-bold">{issue.law}</span>
+                    </div>
+                    <p className="text-[11px] text-[#42526E]">{issue.explanation}</p>
+                    <div className="text-[11px] text-[#36B37E] font-semibold">Recommended Fix Vector: {issue.solution}</div>
                   </div>
-                  <p className="text-[#94A3B8] font-normal text-[11px] leading-relaxed"><strong className="text-white">Vector:</strong> {item.solution}</p>
-                  <div className="text-[10px] text-[#10B981] font-bold pt-1">{item.roi}</div>
+
+                  <button 
+                    onClick={() => toggleAcknowledgeNode(issue.id)}
+                    className={`shrink-0 px-2 py-1 rounded text-[10px] font-bold ${issue.acknowledged ? 'bg-[#36B37E] text-white' : 'bg-[#EBECF0] text-[#172B4D] hover:bg-[#DFE1E6]'}`}
+                  >
+                    {issue.acknowledged ? '✓ Checked' : 'Mark Reviewed'}
+                  </button>
                 </div>
               ))
             ) : (
-              <p className="text-center italic text-[#64748B] col-span-3 py-6">Awaiting spatial coordinate calculation dataset structures.</p>
+              <p className="text-center italic text-[#7A869A] py-4">Awaiting metric parsing calculations mapping.</p>
             )}
           </div>
         </div>
