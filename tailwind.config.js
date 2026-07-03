@@ -7,17 +7,20 @@ export default {
   theme: {
     extend: {
       colors: {
-        atlassian: {
+        atl: {
           blue: '#0052CC',
-          darkBlue: '#091E42',
-          text: '#172B4D',
-          muted: '#5E6C84',
-          bgLight: '#FAFBFC',
+          ink: '#172B4D',
           border: '#DFE1E6',
+          green: '#36B37E',
+          red: '#FF5630',
+          yellow: '#FFAB00',
+          bgSidebar: '#0C1E3C',
+          bgGlobal: '#0747A6'
         }
       },
-      fontSize: {
-        'xxs': '0.65rem',
+      fontFamily: {
+        sans: ['Space Grotesk', 'Segoe UI', 'Roboto', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Menlo', 'monospace']
       }
     },
   },
